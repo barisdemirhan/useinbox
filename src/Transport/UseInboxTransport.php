@@ -24,7 +24,7 @@ class UseInboxTransport extends Transport
 
         $useinboxClient = new UseInbox();
         try {
-            $response = $useinboxClient->send(['body' => $this->getBody($message)]);
+            $response = $useinboxClient->send($this->getBody($message));
         } catch (\Exception $e) {
             throw $e;
         }

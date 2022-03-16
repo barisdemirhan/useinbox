@@ -19,10 +19,6 @@ class UseInbox
         $this->accountPassword = config('useinbox.account_password');
         $this->baseUrl = "https://useapi.useinbox.com/";
         $this->client = new \GuzzleHttp\Client(['base_uri' => $this->baseUrl]);
-        $this->header = [
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
-        ];
     }
 
     /**
@@ -50,7 +46,10 @@ class UseInbox
     {
         try {
             $request = $this->client->post('token', [
-                'headers' => $this->header,
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ],
                 'body' => json_encode([
                     'EmailAddress' => $this->accountEmail,
                     'Password' => $this->accountPassword,
@@ -71,12 +70,16 @@ class UseInbox
     public function send($body)
     {
         $this->getToken();
-        return $this->getResponse($this->client->post('notify/v1/send', [...$body, [
-            'headers' =>
-                [
-                    ...$this->header,
-                    'Authorization' => "{$this->token['token_type']} {$this->token['access_token']}"
+        $client = $this->client->post('notify/v1/send',
+            [
+                'body' => json_encode($body),
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                    'Authorization' => $this->token['token_type'] . ' ' . $this->token['access_token']
                 ]
-        ]])->getBody());
+            ]
+        );
+        return $this->getResponse($client->getBody());
     }
 }
