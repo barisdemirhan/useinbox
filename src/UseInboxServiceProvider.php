@@ -17,6 +17,9 @@ class UseInboxServiceProvider extends ServiceProvider
                 __DIR__ . '/../config/config.php' => config_path('useinbox.php'),
             ], 'config');
         }
+        $this->app['swift.transport']->extend('useinbox', function ($app) {
+            return new UseInboxAddedTransportManager($app);
+        });
     }
 
     /**
@@ -30,10 +33,6 @@ class UseInboxServiceProvider extends ServiceProvider
         // Register the main class to use with the facade
         $this->app->singleton('useinbox', function () {
             return new UseInbox;
-        });
-
-        $this->app->singleton('swift.transport', function ($app) {
-            return new UseInboxAddedTransportManager($app);
         });
     }
 }

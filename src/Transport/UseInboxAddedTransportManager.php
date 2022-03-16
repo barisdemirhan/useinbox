@@ -6,7 +6,7 @@ use Illuminate\Mail\TransportManager;
 
 class UseInboxAddedTransportManager extends TransportManager
 {
-    protected function createUseInboxDriver()
+    protected function createUseinboxDriver()
     {
         return new UseInboxTransport;
     }
