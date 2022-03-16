@@ -44,7 +44,8 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Barisdemirhan\\Useinbox\\UseInboxServiceProvider"
+        "Barisdemirhan\\Useinbox\\UseInboxServiceProvider",
+        "Barisdemirhan\\Useinbox\\MailServiceProvider"
       ],
       "aliases": {
         "Useinbox": "Barisdemirhan\\Useinbox\\UseInboxFacade"

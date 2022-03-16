@@ -20,7 +20,6 @@ class UseInboxTransport extends Transport
 
     public function send(Swift_Mime_SimpleMessage $message, &$failedRecipients = null)
     {
-
         $this->beforeSendPerformed($message);
 
         $useinboxClient = new UseInbox();
