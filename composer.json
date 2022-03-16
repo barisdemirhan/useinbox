@@ -44,10 +44,10 @@
   "extra": {
     "laravel": {
       "providers": [
-        "src/UseInboxServiceProvider"
+        "Barisdemirhan\\Useinbox\\UseInboxServiceProvider"
       ],
       "aliases": {
-        "Useinbox": "src/UseInboxFacade"
+        "Useinbox": "Barisdemirhan\\Useinbox\\UseInboxFacade"
       }
     }
   }
