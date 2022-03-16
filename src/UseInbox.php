@@ -19,6 +19,10 @@ class UseInbox
         $this->accountPassword = config('useinbox.account_password');
         $this->baseUrl = "https://useapi.useinbox.com/";
         $this->client = new \GuzzleHttp\Client(['base_uri' => $this->baseUrl]);
+        $this->header = [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ];
     }
 
     /**
@@ -42,29 +46,37 @@ class UseInbox
         throw new Exception($responseArray['resultMessage']);
     }
 
-    public function refreshToken()
+    public function getToken()
     {
-        $request = $this->client->get('token', [
-            'EmailAddress' => $this->accountEmail,
-            'Password' => $this->accountPassword,
-        ]);
-        $data = $this->getResponse($request->getBody());
+        try {
+            $request = $this->client->post('token', [
+                'headers' => $this->header,
+                'body' => json_encode([
+                    'EmailAddress' => $this->accountEmail,
+                    'Password' => $this->accountPassword,
+                ], JSON_THROW_ON_ERROR)
+            ]);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        $response = $this->getResponse($request->getBody());
         $this->token = [
-            'access_token' => $data['access_token'],
-            'expires_in' => $data['expires_in'],
-            'token_type' => $data['token_type'],
-        ];
-        $this->header = [
-            'headers' =>
-                [
-                    'Authorization' => "{$this->token['token_type']} {$this->token['access_token']}"
-                ]
+            'access_token' => $response['data']['access_token'],
+            'expires_in' => $response['data']['expires_in'],
+            'token_type' => $response['data']['token_type'],
+            'refresh_token' => $response['data']['refresh_token'],
         ];
     }
 
     public function send($body)
     {
-        $this->refreshToken();
-        return $this->getResponse($this->client->post('notify/v1/send', [...$body, ...$this->header])->getBody());
+        $this->getToken();
+        return $this->getResponse($this->client->post('notify/v1/send', [...$body, [
+            'headers' =>
+                [
+                    ...$this->header,
+                    'Authorization' => "{$this->token['token_type']} {$this->token['access_token']}"
+                ]
+        ]])->getBody());
     }
 }
